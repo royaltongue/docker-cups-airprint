@@ -1,41 +1,36 @@
-# znetwork/cups-avahi-airprint [docker-image](https://hub.docker.com/r/znetwork/synology-airprint)
+# Attribution
+Forked From: znetwork/cups-avahi-airprint [GitHub](https://github.com/quadportnick/docker-cups-airprint) || [DockerHub](https://hub.docker.com/r/znetwork/synology-airprint)
 
-# Working on Synology DSM 7 (!!!) and AMD64
+# Description
 
-Fork from [quadportnick/docker-cups-airprint](https://github.com/quadportnick/docker-cups-airprint) and [chuckcharlie/docker-cups-airprint](https://github.com/chuckcharlie/docker-cups-airprint)
+This Ubuntu 22.04-based Docker image runs a CUPS instance that is meant as an AirPrint relay for printers that are already on the network but not AirPrint capable.
 
-This Ubuntu-based Docker image runs a CUPS instance that is meant as an AirPrint relay for printers that are already on the network but not AirPrint capable.
-* `Included drivers HP, Samsung, Canon, Xerox, etc.`
+Among some other items of cleanup, this fork will install `printer-driver-all` instead of a select few drivers. For more information about which drivers are included, please see [the Ubuntu packages page](https://packages.ubuntu.com/jammy/printer-driver-all).
 
-## Easy run command (use username and password: admin/admin):
-```docker run --name airprint --restart unless-stopped --net host znetwork/synology-airprint:latest```
+It's also worth mentioning that this installs cups-PDF as well, although that's from the upstream.
 
-### Before run docker conteiner on DSM7 Synology run this commands in ssh terminal:
-* `sudo synosystemctl stop cupsd`
-* `sudo synosystemctl stop cups-lpd`
-* `sudo synosystemctl stop cups-service-handler`
-* `sudo synosystemctl disable cupsd`
-* `sudo synosystemctl disable cups-lpd`
-* `sudo synosystemctl disable cups-service-handler`
+# Setup
+Through Docker Compose:
+```
+services:
+  cups:
+    container_name: cups
+    image: curiouscocoon/docker-cups-pdf-airprint:latest
+    environment:
+      - CUPSADMIN=CHANGE_ME
+      - CUPSPASSWORD=CHANGE_ME
+    volumes:
+      - ./cups/services:/services
+      - ./cups/config:/config
 
-### Add and setup printer:
-* CUPS will be configurable at http://[host ip]:631 using the CUPSADMIN/CUPSPASSWORD.
-* Make sure you select `Share This Printer` when configuring the printer in CUPS.
-* ***After configuring your printer, you need to close the web browser for at least 60 seconds. CUPS will not write the config files until it detects the connection is closed for as long as a minute.***
-
-### After setup and testing AirPrint, you can back run on services. (maybe you will need restart nas)
-* `sudo synosystemctl start cupsd`
-* `sudo synosystemctl start cups-lpd`
-* `sudo synosystemctl start cups-service-handler`
-* `sudo synosystemctl anable cupsd`
-* `sudo synosystemctl anable cups-lpd`
-* `sudo synosystemctl anable cups-service-handler`
-
-## Manual Configuration
+    network_mode: host
+    restart: unless-stopped
+```
 
 ### Volumes:
 * `/config`: where the persistent printer configs will be stored
 * `/services`: where the Avahi service files will be generated
+* `/var/spool/cups-pdf/ANONYMOUS` : where cups-pdf will output prints
 
 ### Variables:
 * `CUPSADMIN`: the CUPS admin user you want created - default is `admin` if unspecified
@@ -43,7 +38,7 @@ This Ubuntu-based Docker image runs a CUPS instance that is meant as an AirPrint
 
 ### Ports/Network:
 * Must be run on host network. This is required to support multicasting which is needed for Airprint.
-
+ 
 
 # Usage
 

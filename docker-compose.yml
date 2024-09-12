@@ -8,5 +8,6 @@ services:
     volumes:
       - ./cupsdocker/services:/services
       - ./cupsdocker/config:/config
+      - ./cupsdocker/pdf-output:/var/spool/cups-pdf/ANONYMOUS
     network_mode: host
     restart: unless-stopped
