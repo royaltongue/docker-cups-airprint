@@ -1,13 +1,11 @@
 FROM ubuntu:jammy
-LABEL maintainer="znetwork@me.com"
-LABEL version="0.3"
-LABEL description="AIRPRINT FROM SYNOLOGY DSM 7 (HP, SAMSUNG, ETC)"
+LABEL version="2.1"
+LABEL description="CUPS with PDF and Avahi/AirPrint"
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	locales \
 	brother-lpr-drivers-extra brother-cups-wrapper-extra \
-	printer-driver-splix \
-	printer-driver-gutenprint \
+    printer-driver-all \
 	gutenprint-doc \
 	gutenprint-locales \
 	libgutenprint9 \
@@ -33,8 +31,7 @@ RUN apt-get update && apt-get install -y \
 EXPOSE 631
 
 # We want a mount for these
-VOLUME /config
-VOLUME /services
+VOLUME /config /services /var/spool/cups-pdf/ANONYMOUS
 
 # Add scripts
 ADD root /

@@ -1,15 +1,12 @@
-version: '3.5'
-
 services:
-  airprint:
-    container_name: airprint
-    image: znetwork/synology-airprint:0.3
-    build: .
-    restart: always
-    network_mode: "host"
+  cups:
+    container_name: cups
+    image: curiouscocoon/docker-cups-pdf-airprint:latest
     environment:
-      CUPSADMIN: admin
-      CUPSPASSWORD: admin
+      - CUPSADMIN=CHANGE_ME
+      - CUPSPASSWORD=CHANGE_ME
     volumes:
-      - "./services:/services"
-      - "./config:/config"
+      - ./cupsdocker/services:/services
+      - ./cupsdocker/config:/config
+    network_mode: host
+    restart: unless-stopped
